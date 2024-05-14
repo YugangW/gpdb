@@ -81,5 +81,4 @@ For more information about using foreign tables in Greenplum Database, see [Acce
 
 For detailed information about this module, refer to the [postgres\_fdw](https://www.postgresql.org/docs/12/postgres-fdw.html) PostgreSQL documentation.
 
-The `postgres_fdw` foreign-data wrapper is included in the Greenplum Database open source github repository. You can view the [source code](https://github.com/greenplum-db/gpdb/tree/main/contrib/postgres_fdw) for the module which is located in the `contrib/` directory.
-
+The `postgres_fdw` foreign-data wrapper is included in the VMWare Greenplum GitHub repository. You can view the [source code](https://github.com/greenplum-db/gpdb/tree/main/contrib/postgres_fdw) for the module which is located in the `contrib/` directory.

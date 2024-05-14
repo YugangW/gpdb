@@ -15,7 +15,7 @@ For detailed information about using PL/Container, refer to:
 -   [PL/Container Resource Management](pl_container_using.html)
 -   [PL/Container Functions](pl_container_using.html)
 
-The PL/Container language extension is available as an open source module. For information about the module, see the README file in the GitHub repository at [https://github.com/greenplum-db/plcontainer](https://github.com/greenplum-db/plcontainer).
+The PL/Container language extension is available as a module. For information about the module, see the README file in the GitHub repository at [https://github.com/greenplum-db/plcontainer](https://github.com/greenplum-db/plcontainer).
 
 ## <a id="about_pl_container"></a>About the PL/Container Language Extension 
 
@@ -190,7 +190,7 @@ Install the PL/Container language extension using the `gppkg` utility.
 
 Install the Docker images that PL/Container will use to create language-specific containers to run the UDFs.
 
-> **Note** The PL/Container open source module contains dockerfiles to build Docker images that can be used with PL/Container. You can build a Docker image to run PL/Python UDFs and a Docker image to run PL/R UDFs. See the dockerfiles in the GitHub repository at [https://github.com/greenplum-db/plcontainer](https://github.com/greenplum-db/plcontainer).
+> **Note** The PL/Container module contains dockerfiles to build Docker images that can be used with PL/Container. You can build a Docker image to run PL/Python UDFs and a Docker image to run PL/R UDFs. See the dockerfiles in the GitHub repository at [https://github.com/greenplum-db/plcontainer](https://github.com/greenplum-db/plcontainer).
 
 -   Download the files that contain the Docker images from the [VMware Tanzu Network](https://network.pivotal.io). For example, for Greenplum 6.22, click on "PL/Container Image for Python 2.2.0" which downloads **plcontainer-python3-image-2.2.0-gp7.tar.gz** with Python 3.9 and the *Python 3.9 Data Science Module Package*.
 
@@ -477,4 +477,3 @@ For a list of Docker commands, see the [Docker engine Run Reference](https://doc
 Installing Docker on Linux systems [https://docs.docker.com/engine/installation/linux/centos/](https://docs.docker.com/engine/installation/linux/centos/)
 
 Control and configure Docker with systemd [https://docs.docker.com/engine/admin/systemd/](https://docs.docker.com/engine/admin/systemd/)
-

@@ -2,7 +2,7 @@
 
 The `orafce` module provides Oracle Compatibility SQL functions in Greenplum Database. These functions target PostgreSQL but can also be used in Greenplum.
 
-The Greenplum Database `orafce` module is a modified version of the [open source Orafce PostgreSQL module extension](https://github.com/orafce/orafce). The modified `orafce` source files for Greenplum Database can be found in the `gpcontrib/orafce` directory in the [Greenplum Database open source project](https://github.com/greenplum-db/gpdb). The source reflects the Orafce 3.6.1 release and additional commits to [3af70a28f6](https://github.com/orafce/orafce/tree/3af70a28f6ab81f43c990fb5661df99a37328b8a).
+The VMware Greenplum `orafce` module is a modified version of the [Orafce PostgreSQL module extension](https://github.com/orafce/orafce). The modified `orafce` source files for Greenplum Database can be found in the `gpcontrib/orafce` directory in [this repo](https://github.com/greenplum-db/gpdb). The source reflects the Orafce 3.6.1 release and additional commits to [3af70a28f6](https://github.com/orafce/orafce/tree/3af70a28f6ab81f43c990fb5661df99a37328b8a).
 
 There are some restrictions and limitations when you use the module in Greenplum Database.
 
@@ -92,4 +92,3 @@ Note the following differences when using the Oracle Compatibility Functions wit
 ## <a id="topic_info"></a>Additional Module Documentation 
 
 Refer to the [README](https://github.com/greenplum-db/gpdb/tree/main/gpcontrib/orafce/README.asciidoc) and [Greenplum Database orafce documentation](https://github.com/greenplum-db/gpdb/tree/main/gpcontrib/orafce/doc/orafce_documentation) in the Greenplum Database github repository for detailed information about the individual functions and supporting objects provided in this module.
-

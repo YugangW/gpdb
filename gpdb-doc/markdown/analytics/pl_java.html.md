@@ -24,7 +24,7 @@ This section contains an overview of the Greenplum Database PL/Java language.
 
 With the Greenplum Database PL/Java extension, you can write Java methods using your favorite Java IDE and install the JAR files that contain those methods into Greenplum Database.
 
-Greenplum Database PL/Java package is based on the open source PL/Java 1.5.0. Greenplum Database PL/Java provides the following features.
+Greenplum Database PL/Java package is based on the open source PL/Java 1.5.0. VMware Greenplum PL/Java provides the following features.
 
 -   Ability to run PL/Java functions with Java 8, Java 11 and Java 17.
 -   Ability to specify Java runtime.
@@ -771,4 +771,3 @@ java_substring
 The PL/Java Github wiki page - [https://github.com/tada/pljava/wiki](https://github.com/tada/pljava/wiki).
 
 PL/Java 1.5.0 release - [https://github.com/tada/pljava/tree/REL1\_5\_STABLE](https://github.com/tada/pljava/tree/REL1_5_STABLE).
-

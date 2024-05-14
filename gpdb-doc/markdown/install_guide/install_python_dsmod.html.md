@@ -241,4 +241,3 @@ $ gpstop -r
 ```
 
 > **Note** After you uninstall a Data Science Package for Python from your Greenplum Database cluster, any UDFs that you have created that import Python modules installed with this package will return an error.
-

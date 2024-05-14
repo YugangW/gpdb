@@ -23,8 +23,6 @@ You must install Greenplum Database on each host machine of the Greenplum Databa
 
 VMware distributes the Greenplum Database software as a downloadable package that you install on each host system with the operating system's package management system. 
 
-Open source Greenplum Database releases are available as RPM installers for RHEL/Oracle/Rocky Linux. See [Open Source Greenplum Database by VMware](https://network.pivotal.io/products/greenplum-database) to download pre-built binaries in RPM format.
-
 ### <a id="topic_download"></a>Downloading the Greenplum Database Server Software (VMware Greenplum)
 
 You can download the *Greenplum Database Server* software package from [VMware Tanzu Network](https://network.pivotal.io/products/pivotal-gpdb).
@@ -201,4 +199,3 @@ To make sure the Greenplum software was installed and configured correctly, run 
 -   [Creating the Data Storage Areas](create_data_dirs.html)
 -   [Validating Your Systems](validate.html)
 -   [Initializing a Greenplum Database System](init_gpdb.html)
-
