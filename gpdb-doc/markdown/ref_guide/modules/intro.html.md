@@ -18,7 +18,7 @@ The following Greenplum Database and PostgreSQL `contrib` modules are installed;
 -   [gp\_sparse\_vector](gp_sparse_vector.html) - Implements a Greenplum Database data type that uses compressed storage of zeros to make vector computations on floating point numbers faster.
 -   [greenplum_fdw](greenplum_fdw.html) - Provides a foreign data wrapper (FDW) for accessing data stored in one or more external Greenplum Database clusters.
 -   [hstore](hstore.html) - Provides a data type for storing sets of key/value pairs within a single PostgreSQL value.
--   [h3](../../analytics/h3.html) - Provides a hexagonal hierarchical geospatial indexing system.
+-   [h3](../../analytics/h3.html) - Provides hexagonal hierarchical geospatial indexing.
 -   [ip4r](ip4r.html) - Provides data types for operations on IPv4 and IPv6 IP addresses.
 -   [ltree](ltree.html) - Provides data types for representing labels of data stored in a hierarchical tree-like structure.
 -   [orafce](orafce_ref.html) - Provides Greenplum Database-specific Oracle SQL compatibility functions.
