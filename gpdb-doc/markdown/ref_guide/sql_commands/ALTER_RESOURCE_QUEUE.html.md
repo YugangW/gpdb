@@ -12,7 +12,7 @@ where queue\_attribute is:
 
 ```
    ACTIVE_STATEMENTS=<integer>
-   MEMORY_LIMIT='<memory_units>'
+   MEMORY_QUOTA='<memory_units>'
    MAX_COST=<float>
    COST_OVERCOMMIT={TRUE|FALSE}
    MIN_COST=<float>
@@ -27,7 +27,7 @@ where queue\_attribute is:
 
 ```
    ACTIVE_STATEMENTS
-   MEMORY_LIMIT
+   MEMORY_QUOTA
    MAX_COST
    COST_OVERCOMMIT
    MIN_COST
@@ -68,7 +68,7 @@ PRIORITY=\{MIN\|LOW\|MEDIUM\|HIGH\|MAX\}
 
 GPORCA and the Postgres-based planner utilize different query costing models and may compute different costs for the same query. The Greenplum Database resource queue resource management scheme neither differentiates nor aligns costs between GPORCA and the Postgres-based planner; it uses the literal cost value returned from the optimizer to throttle queries.
 
-When resource queue-based resource management is active, use the `MEMORY_LIMIT` and `ACTIVE_STATEMENTS` limits for resource queues rather than configuring cost-based limits. Even when using GPORCA, Greenplum Database may fall back to using the Postgres-based planner for certain queries, so using cost-based limits can lead to unexpected results.
+When resource queue-based resource management is active, use the `MEMORY_QUOTA` and `ACTIVE_STATEMENTS` limits for resource queues rather than configuring cost-based limits. Even when using GPORCA, Greenplum Database may fall back to using the Postgres-based planner for certain queries, so using cost-based limits can lead to unexpected results.
 
 ## <a id="section6"></a>Examples 
 
@@ -81,7 +81,7 @@ ALTER RESOURCE QUEUE myqueue WITH (ACTIVE_STATEMENTS=20);
 Change the memory limit for a resource queue:
 
 ```
-ALTER RESOURCE QUEUE myqueue WITH (MEMORY_LIMIT='2GB');
+ALTER RESOURCE QUEUE myqueue WITH (MEMORY_QUOTA='2GB');
 ```
 
 Reset the maximum and minimum query cost limit for a resource queue to no limit:
@@ -104,10 +104,10 @@ Reset the priority of queries associated with a resource queue to the minimum le
 ALTER RESOURCE QUEUE myqueue WITH (PRIORITY=MIN);
 ```
 
-Remove the `MAX_COST` and `MEMORY_LIMIT` limits from a resource queue:
+Remove the `MAX_COST` and `MEMORY_QUOTA` limits from a resource queue:
 
 ```
-ALTER RESOURCE QUEUE myqueue WITHOUT (MAX_COST, MEMORY_LIMIT);
+ALTER RESOURCE QUEUE myqueue WITHOUT (MAX_COST, MEMORY_QUOTA);
 ```
 
 ## <a id="section7"></a>Compatibility 
@@ -119,4 +119,3 @@ The `ALTER RESOURCE QUEUE` statement is a Greenplum Database extension. This com
 [CREATE RESOURCE QUEUE](CREATE_RESOURCE_QUEUE.html), [DROP RESOURCE QUEUE](DROP_RESOURCE_QUEUE.html), [CREATE ROLE](CREATE_ROLE.html), [ALTER ROLE](ALTER_ROLE.html)
 
 **Parent topic:** [SQL Commands](../sql_commands/sql_ref.html)
-

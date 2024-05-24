@@ -107,7 +107,7 @@ See [Distributions](schema.html).
     ```
 
 -   Use `statement_mem` to allocate memory used for a query per segment db.
--   Use resource queues to set both the numbers of active queries \(`ACTIVE_STATEMENTS`\) and the amount of memory \(`MEMORY_LIMIT`\) that can be utilized by queries in the queue.
+-   Use resource queues to set both the numbers of active queries \(`ACTIVE_STATEMENTS`\) and the amount of memory \(`MEMORY_QUOTA`\) that can be utilized by queries in the queue.
 -   Associate all users with a resource queue. Do not use the default queue.
 -   Set `PRIORITY` to match the real needs of the queue for the workload and time of day. Avoid using MAX priority.
 -   Ensure that resource queue memory allocations do not exceed the setting for `gp_vmem_protect_limit`.
@@ -148,7 +148,7 @@ See [Indexes](schema.html).
 -   Use resource queues to manage the workload on the cluster.
 -   Associate all roles with a user-defined resource queue.
 -   Use the `ACTIVE_STATEMENTS` parameter to limit the number of active queries that members of the particular queue can run concurrently.
--   Use the `MEMORY_LIMIT` parameter to control the total amount of memory that queries running through the queue can utilize.
+-   Use the `MEMORY_QUOTA` parameter to control the total amount of memory that queries running through the queue can utilize.
 -   Alter resource queues dynamically to match the workload and time of day.
 
 See [Configuring Resource Queues](workloads.html#configuring_rq).
@@ -253,4 +253,3 @@ See [Encrypting Data and Database Connections](encryption.html)
 See [High Availability](ha.html).
 
 **Parent topic:** [Greenplum Database Best Practices](intro.html)
-

@@ -20,8 +20,8 @@ Resource queues define classes of queries with similar resource requirements. Ad
 
 A resource queue has the following characteristics:
 
-`MEMORY_LIMIT`
-:   The amount of memory used by all the queries in the queue \(per segment\). For example, setting `MEMORY_LIMIT` to 2GB on the ETL queue allows ETL queries to use up to 2GB of memory in each segment.
+`MEMORY_QUOTA`
+:   The amount of memory used by all the queries in the queue \(per segment\). For example, setting `MEMORY_QUOTA` to 2GB on the ETL queue allows ETL queries to use up to 2GB of memory in each segment.
 
 `ACTIVE_STATEMENTS`
 :   The number of *slots* for a queue; the maximum concurrency level for a queue. When all slots are used, new queries must wait. Each query uses an equal amount of memory by default.
@@ -38,14 +38,14 @@ The Greenplum Database optimizer assigns a numeric cost to each query. If the co
 
 > **Note** GPORCA and the Postgres-based planner utilize different query costing models and may compute different costs for the same query. The Greenplum Database resource queue resource management scheme neither differentiates nor aligns costs between GPORCA and the Postgres-based planner; it uses the literal cost value returned from the optimizer to throttle queries.
 
-When resource queue-based resource management is active, use the `MEMORY_LIMIT` and `ACTIVE_STATEMENTS` limits for resource queues rather than configuring cost-based limits. Even when using GPORCA, Greenplum Database may fall back to using the Postgres-based planner for certain queries, so using cost-based limits can lead to unexpected results.
+When resource queue-based resource management is active, use the `MEMORY_QUOTA` and `ACTIVE_STATEMENTS` limits for resource queues rather than configuring cost-based limits. Even when using GPORCA, Greenplum Database may fall back to using the Postgres-based planner for certain queries, so using cost-based limits can lead to unexpected results.
 
-The default configuration for a Greenplum Database system has a single default resource queue named `pg_default`. The `pg_default` resource queue has an `ACTIVE_STATEMENTS` setting of 20, no `MEMORY_LIMIT`, medium `PRIORITY`, and no set `MAX_COST`. This means that all queries are accepted and run immediately, at the same priority and with no memory limitations; however, only twenty queries may run concurrently.
+The default configuration for a Greenplum Database system has a single default resource queue named `pg_default`. The `pg_default` resource queue has an `ACTIVE_STATEMENTS` setting of 20, no `MEMORY_QUOTA`, medium `PRIORITY`, and no set `MAX_COST`. This means that all queries are accepted and run immediately, at the same priority and with no memory limitations; however, only twenty queries may run concurrently.
 
-The number of concurrent queries a resource queue allows depends on whether the `MEMORY_LIMIT` parameter is set:
+The number of concurrent queries a resource queue allows depends on whether the `MEMORY_QUOTA` parameter is set:
 
--   If no `MEMORY_LIMIT` is set for a resource queue, the amount of memory allocated per query is the value of the [statement_mem](../ref_guide/config_params/guc-list.html#statement_mem) server configuration parameter. The maximum memory the resource queue can use is the product of `statement_mem` and `ACTIVE_STATEMENTS`.
--   When a `MEMORY_LIMIT` is set on a resource queue, the number of queries that the queue can run concurrently is limited by the queue's available memory.
+-   If no `MEMORY_QUOTA` is set for a resource queue, the amount of memory allocated per query is the value of the [statement_mem](../ref_guide/config_params/guc-list.html#statement_mem) server configuration parameter. The maximum memory the resource queue can use is the product of `statement_mem` and `ACTIVE_STATEMENTS`.
+-   When a `MEMORY_QUOTA` is set on a resource queue, the number of queries that the queue can run concurrently is limited by the queue's available memory.
 
 A query admitted to the system is allocated an amount of memory and a query plan tree is generated for it. Each node of the tree is an operator, such as a sort or hash join. Each operator is a separate execution thread and is allocated a fraction of the overall statement memory, at minimum 100KB. If the plan has a large number of operators, the minimum memory required for operators can exceed the available memory and the query will be rejected with an insufficient memory error. Operators determine if they can complete their tasks in the memory allocated, or if they must spill data to disk, in work files. The mechanism that allocates and controls the amount of memory used by each operator is called *memory quota*.
 
@@ -77,15 +77,15 @@ See the [CREATE RESOURCE QUEUE](../ref_guide/sql_commands/CREATE_RESOURCE_QUEUE.
 
 ## <a id="topic113"></a>How Memory Limits Work 
 
-Setting `MEMORY_LIMIT` on a resource queue sets the maximum amount of memory that all active queries submitted through the queue can consume for a segment instance. The amount of memory allotted to a query is the queue memory limit divided by the active statement limit. \(Use the memory limits in conjunction with statement-based queues rather than cost-based queues.\) For example, if a queue has a memory limit of 2000MB and an active statement limit of 10, each query submitted through the queue is allotted 200MB of memory by default. The default memory allotment can be overridden on a per-query basis using the `statement_mem` server configuration parameter \(up to the queue memory limit\). Once a query has started running, it holds its allotted memory in the queue until it completes, even if during execution it actually consumes less than its allotted amount of memory.
+Setting `MEMORY_QUOTA` on a resource queue sets the maximum amount of memory that all active queries submitted through the queue can consume for a segment instance. The amount of memory allotted to a query is the queue memory limit divided by the active statement limit. \(Use the memory limits in conjunction with statement-based queues rather than cost-based queues.\) For example, if a queue has a memory limit of 2000MB and an active statement limit of 10, each query submitted through the queue is allotted 200MB of memory by default. The default memory allotment can be overridden on a per-query basis using the `statement_mem` server configuration parameter \(up to the queue memory limit\). Once a query has started running, it holds its allotted memory in the queue until it completes, even if during execution it actually consumes less than its allotted amount of memory.
 
-You can use the `statement_mem` server configuration parameter to override memory limits set by the current resource queue. At the session level, you can increase `statement_mem` up to the resource queue's `MEMORY_LIMIT`. This will allow an individual query to use all of the memory allocated for the entire queue without affecting other resource queues.
+You can use the `statement_mem` server configuration parameter to override memory limits set by the current resource queue. At the session level, you can increase `statement_mem` up to the resource queue's `MEMORY_QUOTA`. This will allow an individual query to use all of the memory allocated for the entire queue without affecting other resource queues.
 
-The value of `statement_mem` is capped using the `max_statement_mem` configuration parameter \(a superuser parameter\). For a query in a resource queue with `MEMORY_LIMIT` set, the maximum value for `statement_mem` is `min(MEMORY_LIMIT, max_statement_mem)`. When a query is admitted, the memory allocated to it is subtracted from `MEMORY_LIMIT`. If `MEMORY_LIMIT` is exhausted, new queries in the same resource queue must wait. This happens even if `ACTIVE_STATEMENTS` has not yet been reached. Note that this can happen only when `statement_mem` is used to override the memory allocated by the resource queue.
+The value of `statement_mem` is capped using the `max_statement_mem` configuration parameter \(a superuser parameter\). For a query in a resource queue with `MEMORY_QUOTA` set, the maximum value for `statement_mem` is `min(MEMORY_QUOTA, max_statement_mem)`. When a query is admitted, the memory allocated to it is subtracted from `MEMORY_QUOTA`. If `MEMORY_QUOTA` is exhausted, new queries in the same resource queue must wait. This happens even if `ACTIVE_STATEMENTS` has not yet been reached. Note that this can happen only when `statement_mem` is used to override the memory allocated by the resource queue.
 
 For example, consider a resource queue named `adhoc` with the following settings:
 
--   `MEMORY_LIMIT` is 1.5GB
+-   `MEMORY_QUOTA` is 1.5GB
 -   `ACTIVE_STATEMENTS` is 3
 
 By default each statement submitted to the queue is allocated 500MB of memory. Now consider the following series of events:
@@ -96,7 +96,7 @@ By default each statement submitted to the queue is allocated 500MB of memory. N
 
 Queries `Q1` and `Q2` have used 1300MB of the queue's 1500MB. Therefore, `Q3` must wait for `Q1` or `Q2` to complete before it can run.
 
-If `MEMORY_LIMIT` is not set on a queue, queries are admitted until all of the `ACTIVE_STATEMENTS` slots are in use, and each query can set an arbitrarily high `statement_mem`. This could lead to a resource queue using unbounded amounts of memory.
+If `MEMORY_QUOTA` is not set on a queue, queries are admitted until all of the `ACTIVE_STATEMENTS` slots are in use, and each query can set an arbitrarily high `statement_mem`. This could lead to a resource queue using unbounded amounts of memory.
 
 For more information on configuring memory limits on a resource queue, and other memory utilization controls, see [Creating Queues with Memory Limits](#topic12).
 
@@ -110,7 +110,7 @@ SET statement_mem='2MB';
 
 ## <a id="priorities"></a>How Priorities Work 
 
-The `PRIORITY` setting for a resource queue differs from the `MEMORY_LIMIT` and `ACTIVE_STATEMENTS` settings, which determine whether a query will be admitted to the queue and eventually run. The `PRIORITY` setting applies to queries after they become active. Active queries share available CPU resources as determined by the priority settings for its resource queue. When a statement from a high-priority queue enters the group of actively running statements, it may claim a greater share of the available CPU, reducing the share allocated to already-running statements in queues with a lesser priority setting.
+The `PRIORITY` setting for a resource queue differs from the `MEMORY_QUOTA` and `ACTIVE_STATEMENTS` settings, which determine whether a query will be admitted to the queue and eventually run. The `PRIORITY` setting applies to queries after they become active. Active queries share available CPU resources as determined by the priority settings for its resource queue. When a statement from a high-priority queue enters the group of actively running statements, it may claim a greater share of the available CPU, reducing the share allocated to already-running statements in queues with a lesser priority setting.
 
 The comparative size or complexity of the queries does not affect the allotment of CPU. If a simple, low-cost query is running simultaneously with a large, complex query, and their priority settings are the same, they will be allocated the same share of available CPU resources. When a new query becomes active, the CPU shares will be recalculated, but queries of equal priority will still have equal amounts of CPU.
 
@@ -219,18 +219,18 @@ This means that for all roles assigned to the *adhoc* resource queue, only three
 
 ### <a id="topic12"></a>Creating Queues with Memory Limits 
 
-Resource queues with a `MEMORY_LIMIT` setting control the amount of memory for all the queries submitted through the queue. The total memory should not exceed the physical memory available per-segment. Set `MEMORY_LIMIT` to 90% of memory available on a per-segment basis. For example, if a host has 48 GB of physical memory and 6 segment instances, then the memory available per segment instance is 8 GB. You can calculate the recommended `MEMORY_LIMIT` for a single queue as 0.90\*8=7.2 GB. If there are multiple queues created on the system, their total memory limits must also add up to 7.2 GB.
+Resource queues with a `MEMORY_QUOTA` setting control the amount of memory for all the queries submitted through the queue. The total memory should not exceed the physical memory available per-segment. Set `MEMORY_QUOTA` to 90% of memory available on a per-segment basis. For example, if a host has 48 GB of physical memory and 6 segment instances, then the memory available per segment instance is 8 GB. You can calculate the recommended `MEMORY_QUOTA` for a single queue as 0.90\*8=7.2 GB. If there are multiple queues created on the system, their total memory limits must also add up to 7.2 GB.
 
-When used in conjunction with `ACTIVE_STATEMENTS`, the default amount of memory allotted per query is: `MEMORY_LIMIT / ACTIVE_STATEMENTS`. When used in conjunction with `MAX_COST`, the default amount of memory allotted per query is: `MEMORY_LIMIT * (query_cost / MAX_COST)`. Use `MEMORY_LIMIT` in conjunction with `ACTIVE_STATEMENTS` rather than with `MAX_COST`.
+When used in conjunction with `ACTIVE_STATEMENTS`, the default amount of memory allotted per query is: `MEMORY_QUOTA / ACTIVE_STATEMENTS`. When used in conjunction with `MAX_COST`, the default amount of memory allotted per query is: `MEMORY_QUOTA * (query_cost / MAX_COST)`. Use `MEMORY_QUOTA` in conjunction with `ACTIVE_STATEMENTS` rather than with `MAX_COST`.
 
 For example, to create a resource queue with an active query limit of 10 and a total memory limit of 2000MB \(each query will be allocated 200MB of segment host memory at execution time\):
 
 ```
 CREATE RESOURCE QUEUE myqueue WITH (ACTIVE_STATEMENTS=20, 
-MEMORY_LIMIT='2000MB');
+MEMORY_QUOTA='2000MB');
 ```
 
-The default memory allotment can be overridden on a per-query basis using the `statement_mem` server configuration parameter, provided that `MEMORY_LIMIT` or `max_statement_mem` is not exceeded. For example, to allocate more memory to a particular query:
+The default memory allotment can be overridden on a per-query basis using the `statement_mem` server configuration parameter, provided that `MEMORY_QUOTA` or `max_statement_mem` is not exceeded. For example, to allocate more memory to a particular query:
 
 ```
 SET statement_mem='2GB';
@@ -238,7 +238,7 @@ SELECT * FROM my_big_table WHERE column='value' ORDER BY id;
 RESET statement_mem;
 ```
 
-As a general guideline, `MEMORY_LIMIT` for all of your resource queues should not exceed the amount of physical memory of a segment host. If workloads are staggered over multiple queues, it may be OK to oversubscribe memory allocations, keeping in mind that queries may be cancelled during execution if the segment host memory limit \(`gp_vmem_protect_limit`\) is exceeded.
+As a general guideline, `MEMORY_QUOTA` for all of your resource queues should not exceed the amount of physical memory of a segment host. If workloads are staggered over multiple queues, it may be OK to oversubscribe memory allocations, keeping in mind that queries may be cancelled during execution if the segment host memory limit \(`gp_vmem_protect_limit`\) is exceeded.
 
 ### <a id="topic16"></a>Setting Priority Levels 
 
@@ -302,7 +302,7 @@ ALTER RESOURCE QUEUE <exec> WITH (PRIORITY=MAX);
 To reset active statements or memory limit to no limit, enter a value of `-1`. To reset the maximum query cost to no limit, enter a value of `-1.0`. For example:
 
 ```
-ALTER RESOURCE QUEUE <adhoc> WITH (MAX_COST=-1.0, MEMORY_LIMIT='2GB');
+ALTER RESOURCE QUEUE <adhoc> WITH (MAX_COST=-1.0, MEMORY_QUOTA='2GB');
 ```
 
 You can use the `ALTER RESOURCE QUEUE` command to change the priority of queries associated with a resource queue. For example, to set a queue to the minimum priority level:
@@ -432,4 +432,3 @@ To obtain the session ID and statement count parameters required by this functio
 -   The value of `rqppriority` column is the current priority. You can specify a string value of `MAX`, `HIGH`, `MEDIUM`, or `LOW` as the `priority`.
 
 > **Note** The `gp_adjust_priority()` function affects only the specified statement. Subsequent statements in the same resource queue are run using the queue's normally assigned priority.
-

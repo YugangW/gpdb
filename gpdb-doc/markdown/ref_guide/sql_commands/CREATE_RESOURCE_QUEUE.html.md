@@ -15,13 +15,13 @@ where queue\_attribute is:
         [ MAX_COST=<float >[COST_OVERCOMMIT={TRUE|FALSE}] ]
         [ MIN_COST=<float >]
         [ PRIORITY={MIN|LOW|MEDIUM|HIGH|MAX} ]
-        [ MEMORY_LIMIT='<memory_units>' ]
+        [ MEMORY_QUOTA='<memory_units>' ]
 
  | MAX_COST=float [ COST_OVERCOMMIT={TRUE|FALSE} ]
         [ ACTIVE_STATEMENTS=<integer >]
         [ MIN_COST=<float >]
         [ PRIORITY={MIN|LOW|MEDIUM|HIGH|MAX} ]
-        [ MEMORY_LIMIT='<memory_units>' ]
+        [ MEMORY_QUOTA='<memory_units>' ]
 ```
 
 ## <a id="section3"></a>Description 
@@ -34,15 +34,15 @@ Resource queues with a `MAX_COST` threshold set a maximum limit on the total cos
 
 > **Note** GPORCA and the Postgres-based planner utilize different query costing models and may compute different costs for the same query. The Greenplum Database resource queue resource management scheme neither differentiates nor aligns costs between GPORCA and the Postgres-based planner; it uses the literal cost value returned from the optimizer to throttle queries.
 
-When resource queue-based resource management is active, use the `MEMORY_LIMIT` and `ACTIVE_STATEMENTS` limits for resource queues rather than configuring cost-based limits. Even when using GPORCA, Greenplum Database may fall back to using the Postgres-based planner for certain queries, so using cost-based limits can lead to unexpected results.
+When resource queue-based resource management is active, use the `MEMORY_QUOTA` and `ACTIVE_STATEMENTS` limits for resource queues rather than configuring cost-based limits. Even when using GPORCA, Greenplum Database may fall back to using the Postgres-based planner for certain queries, so using cost-based limits can lead to unexpected results.
 
 If a value is not defined for `ACTIVE_STATEMENTS` or `MAX_COST`, it is set to `-1` by default \(meaning no limit\). After defining a resource queue, you must assign roles to the queue using the [ALTER ROLE](ALTER_ROLE.html) or [CREATE ROLE](CREATE_ROLE.html) command.
 
 You can optionally assign a `PRIORITY` to a resource queue to control the relative share of available CPU resources used by queries associated with the queue in relation to other resource queues. If a value is not defined for `PRIORITY`, queries associated with the queue have a default priority of `MEDIUM`.
 
-Resource queues with an optional `MEMORY_LIMIT` threshold set a maximum limit on the amount of memory that all queries submitted through a resource queue can consume on a segment host. This determines the total amount of memory that all worker processes of a query can consume on a segment host during query execution. Greenplum recommends that `MEMORY_LIMIT` be used in conjunction with `ACTIVE_STATEMENTS` rather than with `MAX_COST`. The default amount of memory allotted per query on statement-based queues is: `MEMORY_LIMIT / ACTIVE_STATEMENTS`. The default amount of memory allotted per query on cost-based queues is: `MEMORY_LIMIT * (query_cost / MAX_COST)`.
+Resource queues with an optional `MEMORY_QUOTA` threshold set a maximum limit on the amount of memory that all queries submitted through a resource queue can consume on a segment host. This determines the total amount of memory that all worker processes of a query can consume on a segment host during query execution. Greenplum recommends that `MEMORY_QUOTA` be used in conjunction with `ACTIVE_STATEMENTS` rather than with `MAX_COST`. The default amount of memory allotted per query on statement-based queues is: `MEMORY_QUOTA / ACTIVE_STATEMENTS`. The default amount of memory allotted per query on cost-based queues is: `MEMORY_QUOTA * (query_cost / MAX_COST)`.
 
-The default memory allotment can be overridden on a per-query basis using the `statement_mem` server configuration parameter, provided that `MEMORY_LIMIT` or `max_statement_mem` is not exceeded. For example, to allocate more memory to a particular query:
+The default memory allotment can be overridden on a per-query basis using the `statement_mem` server configuration parameter, provided that `MEMORY_QUOTA` or `max_statement_mem` is not exceeded. For example, to allocate more memory to a particular query:
 
 ```
 => SET statement_mem='2GB';
@@ -50,7 +50,7 @@ The default memory allotment can be overridden on a per-query basis using the `s
 => RESET statement_mem;
 ```
 
-The `MEMORY_LIMIT` value for all of your resource queues should not exceed the amount of physical memory of a segment host. If workloads are staggered over multiple queues, memory allocations can be oversubscribed. However, queries can be cancelled during execution if the segment host memory limit specified in `gp_vmem_protect_limit` is exceeded.
+The `MEMORY_QUOTA` value for all of your resource queues should not exceed the amount of physical memory of a segment host. If workloads are staggered over multiple queues, memory allocations can be oversubscribed. However, queries can be cancelled during execution if the segment host memory limit specified in `gp_vmem_protect_limit` is exceeded.
 
 For information about `statement_mem`, `max_statement`, and `gp_vmem_protect_limit`, see [Server Configuration Parameters](../config_params/guc_config.html).
 
@@ -104,7 +104,7 @@ Create a resource queue with an active query limit of 20 and a total memory limi
 
 ```
 CREATE RESOURCE QUEUE myqueue WITH (ACTIVE_STATEMENTS=20, 
-  MEMORY_LIMIT='2000MB');
+  MEMORY_QUOTA='2000MB');
 ```
 
 Create a resource queue with a query cost limit of 3000.0:
@@ -143,4 +143,3 @@ CREATE RESOURCE QUEUE myqueue WITH (ACTIVE_STATEMENTS=5,
 [ALTER ROLE](ALTER_ROLE.html), [CREATE ROLE](CREATE_ROLE.html), [ALTER RESOURCE QUEUE](ALTER_RESOURCE_QUEUE.html), [DROP RESOURCE QUEUE](DROP_RESOURCE_QUEUE.html)
 
 **Parent topic:** [SQL Commands](../sql_commands/sql_ref.html)
-

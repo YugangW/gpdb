@@ -116,9 +116,9 @@ Greenplum Database resource queues provide a powerful mechanism for managing the
 
 -   Use the `ACTIVE_STATEMENTS` resource queue parameter to limit the number of active queries that members of a particular queue can run concurrently.
 
--   Use the `MEMORY_LIMIT` parameter to control the total amount of memory that queries running through the queue can utilize. By combining the `ACTIVE_STATEMENTS` and `MEMORY_LIMIT` attributes an administrator can fully control the activity emitted from a given resource queue.
+-   Use the `MEMORY_QUOTA` parameter to control the total amount of memory that queries running through the queue can utilize. By combining the `ACTIVE_STATEMENTS` and `MEMORY_QUOTA` attributes an administrator can fully control the activity emitted from a given resource queue.
 
-    The allocation works as follows: Suppose a resource queue, `sample_queue`, has `ACTIVE_STATEMENTS` set to 10 and `MEMORY_LIMIT` set to 2000MB. This limits the queue to approximately 2 gigabytes of memory per segment. For a cluster with 8 segments per server, the total usage per server is 16 GB for `sample_queue` \(2GB \* 8 segments/server\). If a segment server has 64GB of RAM, there could be no more than four of this type of resource queue on the system before there is a chance of running out of memory \(4 queues \* 16GB per queue\).
+    The allocation works as follows: Suppose a resource queue, `sample_queue`, has `ACTIVE_STATEMENTS` set to 10 and `MEMORY_QUOTA` set to 2000MB. This limits the queue to approximately 2 gigabytes of memory per segment. For a cluster with 8 segments per server, the total usage per server is 16 GB for `sample_queue` \(2GB \* 8 segments/server\). If a segment server has 64GB of RAM, there could be no more than four of this type of resource queue on the system before there is a chance of running out of memory \(4 queues \* 16GB per queue\).
 
     Note that by using `STATEMENT_MEM`, individual queries running in the queue can allocate more than their "share" of memory, thus reducing the memory available for other queries in the queue.
 
@@ -130,4 +130,3 @@ Greenplum Database resource queues provide a powerful mechanism for managing the
 
 
 **Parent topic:** [Greenplum Database Best Practices](intro.html)
-
