@@ -1318,6 +1318,14 @@ You must be a superuser to change the `gp_max_parallel_cursors` setting.
 |-----------|-------|-------------------|
 |-1 - 1024 | -1 | coordinator, superuser, session, reload|
 
+## <a id="gp_max_partition_level"></a>gp_max_partition_level
+
+Limits the maximum number of levels allowed in a partition hierarchy created using classic syntax. By default, the value is `0`, which indicates no limit.
+
+|Value Range|Default|Set Classifications|
+|-----------|-------|-------------------|
+|integer|0|coordinator, system, reload|
+
 ## <a id="gp_max_plan_size"></a>gp\_max\_plan\_size 
 
 Specifies the total maximum uncompressed size of a query execution plan multiplied by the number of Motion operators \(slices\) in the plan. If the size of the query plan exceeds the value, the query is cancelled and an error is returned. A value of 0 means that the size of the plan is not monitored.
@@ -3654,4 +3662,3 @@ SET XML OPTION { DOCUMENT | CONTENT }
 |Value Range|Default|Set Classifications|
 |-----------|-------|-------------------|
 |document, content|content|coordinator, session, reload|
-
